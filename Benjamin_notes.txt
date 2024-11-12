@@ -1,0 +1,15 @@
+Hello!
+
+Install the following:-
+npm init -y
+npm i express dotenv cors helmet express-rate-limit mongoose express-validator jsonwebtoken uuid bcrypt
+npm i -D nodemon
+===============
+create .env
+key the below:-
+
+PORT=
+MONGODB_URI=mongodb://<your url>
+ACCESS_SECRET=<your secret>
+REFRESH_SECRET=<your secrect>
+===============
