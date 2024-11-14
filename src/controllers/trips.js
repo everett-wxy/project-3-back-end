@@ -76,4 +76,60 @@ const getOneTrip = async (req, res) => {
   }
 };
 
-module.exports = { seedTrips, getAllTrips, getOneTrip };
+const deleteOneTrip = async (req, res) => {
+  try {
+    const tripId = req.body.id;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      res.status(400).json({ status: "error", msg: "invalid trip ID" });
+    } else {
+      const trip = await TripsModel.findById(tripId);
+
+      if (trip) {
+        await TripsModel.findByIdAndDelete(tripId);
+        res.json({ status: "ok", msg: "trip deleted" });
+      } else {
+        res.status(400).json({ status: "error", msg: "no trip found" });
+      }
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(400).json({ status: "error", msg: " error deleting trip" });
+  }
+};
+
+const updateOneTrip = async (req, res) => {
+  try {
+    const tripId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      res.status(400).json({ status: "error", msg: "invalid trip ID" });
+    } else {
+      const trip = await TripsModel.findById(tripId);
+
+      if (trip) {
+        await TripsModel.findByIdAndUpdate(tripId, {
+          name: req.body.name || trip.name,
+          country: req.body.country || trip.country,
+          city: req.body.city || trip.city,
+          budget: req.body.budget || trip.budget,
+          days: req.body.days || trip.days,
+        });
+        res.json({ status: "ok", msg: "trip updated" });
+      } else {
+        res.status(400).json({ status: "error", msg: "no trip found" });
+      }
+    }
+  } catch (error) {
+    console.error(error.messsage);
+    res.status(400).json({ status: "error", msg: "error updating trip" });
+  }
+};
+
+module.exports = {
+  seedTrips,
+  getAllTrips,
+  getOneTrip,
+  deleteOneTrip,
+  updateOneTrip,
+};
