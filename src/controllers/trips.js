@@ -1,4 +1,5 @@
 const TripsModel = require("../models/Trips");
+const FlightModel = require("../models/Flights");
 const mongoose = require("mongoose");
 
 const seedTrips = async (req, res) => {
@@ -12,6 +13,7 @@ const seedTrips = async (req, res) => {
         city: "Tokyo",
         budget: "5000",
         days: "7",
+        flights: "673614c82c8e253c94047cf9",
       },
       {
         name: "CNY Getaway",
@@ -19,6 +21,7 @@ const seedTrips = async (req, res) => {
         city: "Christchurch",
         budget: "7000",
         days: "10",
+        flights: "673614c82c8e253c94047cfa",
       },
       {
         name: "Birthday Trip",
@@ -26,6 +29,7 @@ const seedTrips = async (req, res) => {
         city: "Tromso",
         budget: "10000",
         days: "10",
+        flights: "673614c82c8e253c94047cfb",
       },
     ]);
 
@@ -38,7 +42,9 @@ const seedTrips = async (req, res) => {
 
 const getAllTrips = async (req, res) => {
   try {
-    const trips = await TripsModel.find();
+    const trips = await TripsModel.find().populate("flights"); // Populate the 'flights' field
+    // .populate("accommodations") // Populate the 'accommodations' field
+    // .populate("activities"); // Populate the 'activities' field
 
     if (trips.length > 0) {
       return res.json(trips);
@@ -98,6 +104,7 @@ const deleteOneTrip = async (req, res) => {
   }
 };
 
+// need to figure out how to update flights.
 const updateOneTrip = async (req, res) => {
   try {
     const tripId = req.params.id;
@@ -106,6 +113,11 @@ const updateOneTrip = async (req, res) => {
       res.status(400).json({ status: "error", msg: "invalid trip ID" });
     } else {
       const trip = await TripsModel.findById(tripId);
+      const updatedFlight = await FlightModel.findByIdAndUpdate(
+        trip.flights._id,
+        { name: req.body.flights.name },
+        { new: true }
+      );
 
       if (trip) {
         await TripsModel.findByIdAndUpdate(tripId, {
@@ -115,6 +127,12 @@ const updateOneTrip = async (req, res) => {
           budget: req.body.budget || trip.budget,
           days: req.body.days || trip.days,
         });
+
+        await FlightModel.findByIdAndUpdate(
+          trip.flights._id,
+          { name: req.body.flights.name },
+          { new: true }
+        );
         res.json({ status: "ok", msg: "trip updated" });
       } else {
         res.status(400).json({ status: "error", msg: "no trip found" });
@@ -134,6 +152,9 @@ const addTrips = async (req, res) => {
   1st entry - name: "Birthday trip", country: "Japan". city: "Tokyo"
   2nd entry - name: "Birthday trip", country: "Japan", city: "Osaka"
   */
+
+  // ben to add in blank fields check
+
   try {
     const existingTrip = await TripsModel.findOne({
       name: req.body.name,
@@ -143,7 +164,7 @@ const addTrips = async (req, res) => {
     if (existingTrip) {
       res.status(400).json({
         status: "error",
-        msg: "A trip with the saem name and city exists",
+        msg: "A trip with the same name and city exists",
       });
     } else {
       const newTrip = new TripsModel({

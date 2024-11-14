@@ -8,4 +8,4 @@ const ActivitiesSchema = new mongoose.Schema(
   { collection: "activities" }
 );
 
-module.exports = mongoose.model(ActivitiesSchema);
+module.exports = mongoose.model("Activities", ActivitiesSchema);

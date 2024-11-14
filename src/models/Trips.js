@@ -7,6 +7,11 @@ const TripsSchema = new mongoose.Schema(
     city: { type: String, required: true, minLength: 1 },
     budget: { type: Number, required: true, minLength: 1 },
     days: { type: Number, required: true, minLength: 1 },
+    flights: {
+      type: [mongoose.Schema.Types.ObjectId],
+      required: false,
+      ref: "Flights",
+    },
   },
   { collection: "trips" }
 );
