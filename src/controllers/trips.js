@@ -36,19 +36,44 @@ const seedTrips = async (req, res) => {
   }
 };
 
-const getTrips = async (req, res) => {
+const getAllTrips = async (req, res) => {
   try {
     const trips = await TripsModel.find();
 
     if (trips.length > 0) {
       return res.json(trips);
     } else {
-      res.status(400).json({ status: "error", msg: "no trips found" });
+      return res.status(400).json({ status: "error", msg: "no trips found" });
     }
   } catch (error) {
     console.error(error.message);
-    res.status(400).json({ status: "error", msg: "error getting trips" });
+    return res
+      .status(400)
+      .json({ status: "error", msg: "error getting trips" });
   }
 };
 
-module.exports = { seedTrips, getTrips };
+const getOneTrip = async (req, res) => {
+  try {
+    const tripId = req.body.id;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ status: "error", msg: "invalid trip ID" });
+    } else {
+      const trip = await TripsModel.findById(tripId);
+
+      if (trip) {
+        res.json(trip);
+      } else {
+        res.status(400).json({ status: "error", msg: "no trips found" });
+      }
+    }
+  } catch (error) {
+    console.error(error.message);
+    return res
+      .status(400)
+      .json({ status: "error", msg: "error getting trips" });
+  }
+};
+
+module.exports = { seedTrips, getAllTrips, getOneTrip };

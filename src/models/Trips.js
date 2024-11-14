@@ -12,11 +12,3 @@ const TripsSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Trips", TripsSchema);
-
-/*
-- trips
-- flights
-- accommodation
-- activities
-
-*/

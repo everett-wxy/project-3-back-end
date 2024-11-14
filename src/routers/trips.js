@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { seedTrips, getTrips } = require("../controllers/trips");
+const { seedTrips, getAllTrips, getOneTrip } = require("../controllers/trips");
 
 router.get("/trips/seed", seedTrips);
-router.get("/trips", getTrips);
+router.get("/trips", getAllTrips);
+router.post("/trips", getOneTrip);
 
 module.exports = router;
