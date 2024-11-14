@@ -126,10 +126,47 @@ const updateOneTrip = async (req, res) => {
   }
 };
 
+const addTrips = async (req, res) => {
+  // if the trip name, and city is the same, then will throw error because duplicate entry. Did not put country on assumption you can plan more than one city in the country (stretch goal if doing more than one city in a country)
+
+  /* 
+  e.g:
+  1st entry - name: "Birthday trip", country: "Japan". city: "Tokyo"
+  2nd entry - name: "Birthday trip", country: "Japan", city: "Osaka"
+  */
+  try {
+    const existingTrip = await TripsModel.findOne({
+      name: req.body.name,
+      city: req.body.city,
+    });
+
+    if (existingTrip) {
+      res.status(400).json({
+        status: "error",
+        msg: "A trip with the saem name and city exists",
+      });
+    } else {
+      const newTrip = new TripsModel({
+        name: req.body.name,
+        country: req.body.country,
+        city: req.body.city,
+        budget: req.body.budget,
+        days: req.body.days,
+      });
+      await newTrip.save();
+      res.json({ status: "ok", msg: "trip added" });
+    }
+  } catch (error) {
+    console.error(error.message);
+    res.status(400).json({ status: "error", msg: "error adding trip" });
+  }
+};
+
 module.exports = {
   seedTrips,
   getAllTrips,
   getOneTrip,
   deleteOneTrip,
   updateOneTrip,
+  addTrips,
 };

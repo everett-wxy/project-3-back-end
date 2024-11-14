@@ -6,6 +6,7 @@ const {
   getOneTrip,
   deleteOneTrip,
   updateOneTrip,
+  addTrips,
 } = require("../controllers/trips");
 
 router.get("/trips/seed", seedTrips);
@@ -13,5 +14,6 @@ router.get("/trips", getAllTrips);
 router.post("/trips", getOneTrip);
 router.delete("/trips", deleteOneTrip);
 router.patch("/trips/:id", updateOneTrip);
+router.put("/trips", addTrips);
 
 module.exports = router;
