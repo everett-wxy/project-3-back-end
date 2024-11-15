@@ -14,11 +14,12 @@ const {
   validateRefreshToken,
 } = require("../validators/auth");
 
+const { checkErrors } = require("../validators/checkErrors");
 const { authAdmin } = require("../middleware/auth");
 
-router.get("/users", authAdmin, getAllUsers);
-router.put("/register", validateRegistrationData, register);
-router.post("/login", validateLoginData, login);
-router.post("/refresh", validateRefreshToken, refresh); // to delete if not used
+router.get("/users", authAdmin, checkErrors, getAllUsers);
+router.put("/register", validateRegistrationData, checkErrors, register);
+router.post("/login", validateLoginData, checkErrors, login);
+router.post("/refresh", validateRefreshToken, checkErrors, refresh); // to delete if not used
 
 module.exports = router;
