@@ -13,7 +13,7 @@ const seedTrips = async (req, res) => {
         city: "Tokyo",
         budget: "5000",
         days: "7",
-        flights: "673614c82c8e253c94047cf9",
+        flights: "6736af60ee6c19031d9fee76",
       },
       {
         name: "CNY Getaway",
@@ -21,7 +21,7 @@ const seedTrips = async (req, res) => {
         city: "Christchurch",
         budget: "7000",
         days: "10",
-        flights: "673614c82c8e253c94047cfa",
+        flights: "6736af60ee6c19031d9fee77",
       },
       {
         name: "Birthday Trip",
@@ -29,7 +29,7 @@ const seedTrips = async (req, res) => {
         city: "Tromso",
         budget: "10000",
         days: "10",
-        flights: "673614c82c8e253c94047cfb",
+        flights: "6736af60ee6c19031d9fee78",
       },
     ]);
 

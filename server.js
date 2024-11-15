@@ -28,10 +28,10 @@ app.use(limiter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/p3", trips);
-// app.use("/p3", accommodations);
-// app.use("/p3", activities);
-app.use("/p3", flights);
+app.use("/WanderGoWhere", trips);
+// app.use("/WanderGoWhere", accommodations);
+// app.use("/WanderGoWhere", activities);
+app.use("/WanderGoWhere", flights);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
