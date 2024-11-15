@@ -8,9 +8,17 @@ const {
   refresh,
 } = require("../controllers/auth");
 
-router.get("/users", getAllUsers);
-router.put("/register", register);
-router.post("/login", login);
-router.post("/refresh", refresh); // to delete if not used
+const {
+  validateRegistrationData,
+  validateLoginData,
+  validateRefreshToken,
+} = require("../validators/auth");
+
+const { authAdmin } = require("../middleware/auth");
+
+router.get("/users", authAdmin, getAllUsers);
+router.put("/register", validateRegistrationData, register);
+router.post("/login", validateLoginData, login);
+router.post("/refresh", validateRefreshToken, refresh); // to delete if not used
 
 module.exports = router;
