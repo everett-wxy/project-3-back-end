@@ -11,6 +11,7 @@ const trips = require("./src/routers/trips");
 // const activities = require("./src/routers/activities");
 const flights = require("./src/routers/flights");
 const auth = require("./src/routers/auth");
+const roles = require("./src/routers/roles");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -34,6 +35,7 @@ app.use("/WanderGoWhere", trips);
 // app.use("/WanderGoWhere", activities);
 app.use("/WanderGoWhere", flights);
 app.use("/WanderGoWhere", auth);
+app.use("/WanderGoWhere", roles);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
