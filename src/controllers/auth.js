@@ -9,7 +9,12 @@ const getAllUsers = async (req, res) => {
 
     const outputArray = [];
     for (const user of users) {
-      outputArray.push({ email: user.email, role: user.role });
+      outputArray.push({
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+        username: user.username,
+      });
     }
 
     res.json(outputArray);

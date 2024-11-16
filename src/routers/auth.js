@@ -17,7 +17,7 @@ const {
 const { checkErrors } = require("../validators/checkErrors");
 const { authAdmin } = require("../middleware/auth");
 
-router.get("/users", authAdmin, checkErrors, getAllUsers);
+router.get("/users", checkErrors, getAllUsers);
 router.put("/register", validateRegistrationData, checkErrors, register);
 router.post("/login", validateLoginData, checkErrors, login);
 router.post("/refresh", validateRefreshToken, checkErrors, refresh); // to delete if not used

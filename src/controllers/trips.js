@@ -1,5 +1,6 @@
 const TripsModel = require("../models/Trips");
 const FlightModel = require("../models/Flights");
+const AuthModel = require("../models/Auth");
 const mongoose = require("mongoose");
 
 const seedTrips = async (req, res) => {
@@ -14,6 +15,7 @@ const seedTrips = async (req, res) => {
         budget: "5000",
         days: "7",
         flights: "6736af60ee6c19031d9fee76",
+        owner: "67379e0ff3692f9300930a52",
       },
       {
         name: "CNY Getaway",
@@ -22,6 +24,7 @@ const seedTrips = async (req, res) => {
         budget: "7000",
         days: "10",
         flights: "6736af60ee6c19031d9fee77",
+        owner: "67379e0ff3692f9300930a52",
       },
       {
         name: "Birthday Trip",
@@ -30,6 +33,7 @@ const seedTrips = async (req, res) => {
         budget: "10000",
         days: "10",
         flights: "6736af60ee6c19031d9fee78",
+        owner: "67379e0ff3692f9300930a52",
       },
     ]);
 
@@ -41,8 +45,14 @@ const seedTrips = async (req, res) => {
 };
 
 const getAllTrips = async (req, res) => {
+  //by user.
   try {
-    const trips = await TripsModel.find().populate("flights"); // Populate the 'flights' field
+    const user = await AuthModel.findOne({ email: req.decoded.email });
+    if (!user) {
+      return res.status(400).json({ msg: "user not found" });
+    }
+    const trips = await TripsModel.find({ owner: user._id }).populate("owner");
+    // .populate("flights")// Populate the 'flights' field
     // .populate("accommodations") // Populate the 'accommodations' field
     // .populate("activities"); // Populate the 'activities' field
 
@@ -110,36 +120,35 @@ const updateOneTrip = async (req, res) => {
     const tripId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(tripId)) {
-      res.status(400).json({ status: "error", msg: "invalid trip ID" });
-    } else {
-      const trip = await TripsModel.findById(tripId);
-      const updatedFlight = await FlightModel.findByIdAndUpdate(
+      return res.status(400).json({ status: "error", msg: "invalid trip ID" });
+    }
+    const trip = await TripsModel.findById(tripId);
+    const updatedFlight = await FlightModel.findByIdAndUpdate(
+      trip.flights._id,
+      { name: req.body.flights.name },
+      { new: true }
+    );
+
+    if (trip) {
+      await TripsModel.findByIdAndUpdate(tripId, {
+        name: req.body.name || trip.name,
+        country: req.body.country || trip.country,
+        city: req.body.city || trip.city,
+        budget: req.body.budget || trip.budget,
+        days: req.body.days || trip.days,
+      });
+
+      await FlightModel.findByIdAndUpdate(
         trip.flights._id,
         { name: req.body.flights.name },
         { new: true }
       );
-
-      if (trip) {
-        await TripsModel.findByIdAndUpdate(tripId, {
-          name: req.body.name || trip.name,
-          country: req.body.country || trip.country,
-          city: req.body.city || trip.city,
-          budget: req.body.budget || trip.budget,
-          days: req.body.days || trip.days,
-        });
-
-        await FlightModel.findByIdAndUpdate(
-          trip.flights._id,
-          { name: req.body.flights.name },
-          { new: true }
-        );
-        res.json({ status: "ok", msg: "trip updated" });
-      } else {
-        res.status(400).json({ status: "error", msg: "no trip found" });
-      }
+      res.json({ status: "ok", msg: "trip updated" });
+    } else {
+      return res.status(400).json({ status: "error", msg: "no trip found" });
     }
   } catch (error) {
-    console.error(error.messsage);
+    console.error(error.message);
     res.status(400).json({ status: "error", msg: "error updating trip" });
   }
 };
