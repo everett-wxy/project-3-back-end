@@ -12,6 +12,11 @@ const TripsSchema = new mongoose.Schema(
       required: false,
       ref: "Flights",
     },
+    owner: {
+      type: [mongoose.Schema.Types.ObjectId],
+      required: true,
+      ref: "Auth",
+    },
   },
   { collection: "trips" }
 );
