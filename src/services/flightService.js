@@ -2,11 +2,11 @@ require("dotenv").config();
 
 const authUrl = "https://test.api.amadeus.com/v1/security/oauth2/token";
 const baseUrlSearchQueries =
-    "https://test.api.amadeus.com/v2/shopping/flight-offers?max=5&currencyCode=SGD&adults=1";
+    "https://test.api.amadeus.com/v2/shopping/flight-offers?max=10&currencyCode=SGD&adults=1";
 const originLocationCodeParameter = "&originLocationCode=";
 const destinationCodeParameter = "&destinationLocationCode=";
 const departureDateParameter = "&departureDate=";
-const returnDateParameter = "&returnDate=";
+// const returnDateParameter = "&returnDate=";
 const cabinClassParameter = "&travelClass=";
 
 const getAccessToken = async () => {
@@ -42,11 +42,10 @@ const getFlightData = async (
     originLocationCode,
     destinationCode,
     departureDate,
-    returnDate,
     cabinClass
 ) => {
     const access_token = await getAccessToken();
-    const url = `${baseUrlSearchQueries}${originLocationCodeParameter}${originLocationCode}${destinationCodeParameter}${destinationCode}${departureDateParameter}${departureDate}${returnDateParameter}${returnDate}${cabinClassParameter}${cabinClass}`;
+    const url = `${baseUrlSearchQueries}${originLocationCodeParameter}${originLocationCode}${destinationCodeParameter}${destinationCode}${departureDateParameter}${departureDate}${cabinClassParameter}${cabinClass}`;
     try {
         const res = await fetch(url, {
             method: "GET",
@@ -59,20 +58,26 @@ const getFlightData = async (
             const errorData = await res.json();
             throw new Error(
                 `Error ${res.status}: ${
-                    errorData.error.message || res.statusText
+                    errorData.error.message || res.statusText || "Unknown error"
                 }`
             );
         }
-        const data = await res.json();
+
+        const { data } = await res.json();
+        if (!data || data.length === 0) {
+            throw new Error("No flight data available for the given query.");
+        }
+
         return data;
     } catch (err) {
-        console.log("error:", err);
+        console.error("Error in getFlightData:", err);
+        throw new Error("Error fetching flight data: " + err.message);
     }
 };
 
-getFlightData("SIN", "BKK", "2025-01-01", "2025-01-07", "ECONOMY")
-    .then((data) => console.log(data))
-    .catch((err) => console.error("Error in getFlightData:", err));
+// getFlightData("SIN", "BKK", "2025-01-01", "2025-01-07", "ECONOMY")
+//     .then((data) => console.log(data))
+//     .catch((err) => console.error("Error in getFlightData:", err));
 
 // console.log("CLIENT_ID:", process.env.AMADEUS_ID);
 // console.log("CLIENT_SECRET:", process.env.AMADEUS_SECRET);

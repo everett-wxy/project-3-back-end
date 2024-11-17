@@ -4,13 +4,12 @@ const { getFlightData } = require("../services/flightService");
 
 const fetchFlights = async (req, res) => {
     try {
-        const { origin, destination, departureDate, returnDate, cabinClass } =
+        const { origin, destination, departureDate, cabinClass } =
             req.query;
         const flightData = await getFlightData(
             origin,
             destination,
             departureDate,
-            returnDate,
             cabinClass
         );
         res.json(flightData);
@@ -82,4 +81,4 @@ const getAllFlights = async (req, res) => {
     }
 };
 
-module.exports = { getAllFlights, seedFlights };
+module.exports = { getAllFlights, seedFlights, fetchFlights };
