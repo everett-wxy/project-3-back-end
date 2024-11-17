@@ -65,6 +65,7 @@ const login = async (req, res) => {
 
     const claims = {
       email: auth.email,
+      username: auth.username,
       role: auth.role,
     };
 

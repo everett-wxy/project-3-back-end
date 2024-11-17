@@ -7,6 +7,7 @@ const {
   deleteOneTrip,
   updateOneTrip,
   addTrips,
+  addAccomsToTrip,
 } = require("../controllers/trips");
 
 const {
@@ -23,5 +24,6 @@ router.post("/trips", auth, validateIdInBody, checkErrors, getOneTrip);
 router.delete("/trips", auth, validateIdInBody, checkErrors, deleteOneTrip);
 router.patch("/trips/:id", auth, checkErrors, updateOneTrip);
 router.put("/trips", auth, validateAddTripData, checkErrors, addTrips);
+router.post("/trips/:id/accoms", addAccomsToTrip);
 
 module.exports = router;

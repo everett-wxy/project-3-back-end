@@ -12,6 +12,11 @@ const TripsSchema = new mongoose.Schema(
       required: false,
       ref: "Flights",
     },
+    accoms: {
+      type: [mongoose.Schema.Types.ObjectId],
+      required: false,
+      ref: "Hotels",
+    },
     owner: {
       type: [mongoose.Schema.Types.ObjectId],
       required: true,
