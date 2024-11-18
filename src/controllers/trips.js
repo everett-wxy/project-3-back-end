@@ -6,6 +6,7 @@ const ActivitiesModel = require("../models/Activities");
 const AccommodationsModel = require("../models/Accommodations");
 
 const mongoose = require("mongoose");
+const Trips = require("../models/Trips");
 
 const seedTrips = async (req, res) => {
     try {
@@ -49,20 +50,19 @@ const seedTrips = async (req, res) => {
 };
 
 const getAllTrips = async (req, res) => {
-  //by user.
-  try {
-    const user = await AuthModel.findOne({ email: req.decoded.email });
-    if (!user) {
-      return res.status(400).json({ msg: "user not found" });
-    }
+    //by user.
+    try {
+        const user = await AuthModel.findOne({ email: req.decoded.email });
+        if (!user) {
+            return res.status(400).json({ msg: "user not found" });
+        }
 
-    const trips = await TripsModel.find({ owner: user._id })
-      .populate("owner")
-      .populate("restaurants")
-      .populate("activities")
-      .populate("accoms");
-    // .populate("flights")// Populate the 'flights' field
-
+        const trips = await TripsModel.find({ owner: user._id })
+            .populate("owner")
+            .populate("restaurants")
+            .populate("activities")
+            .populate("accoms");
+        // .populate("flights")// Populate the 'flights' field
 
         if (trips.length > 0) {
             return res.json(trips);
@@ -133,32 +133,36 @@ const updateOneTrip = async (req, res) => {
     try {
         const tripId = req.params.id;
 
-    if (!mongoose.Types.ObjectId.isValid(tripId)) {
-      return res.status(400).json({ status: "error", msg: "invalid trip ID" });
+        if (!mongoose.Types.ObjectId.isValid(tripId)) {
+            return res
+                .status(400)
+                .json({ status: "error", msg: "invalid trip ID" });
+        }
+        const trip = await TripsModel.findById(tripId);
+
+        if (!trip) {
+            return res
+                .status(404)
+                .json({ status: "error", msg: "ino trip found" });
+        }
+
+        const updateTrip = {};
+        if ("name" in req.body) updateTrip.name = req.body.name;
+        if ("country" in req.body) updateTrip.country = req.body.country;
+        if ("city" in req.body) updateTrip.city = req.body.city;
+        if ("budget" in req.body) updateTrip.budget = req.body.budget;
+        if ("days" in req.body) updateTrip.days = req.body.days;
+
+        await TripsModel.findByIdAndUpdate(
+            tripId,
+            { $set: updateTrip },
+            { new: true }
+        );
+        res.json({ status: "ok", msg: "trip updated" });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ status: "error", msg: "error updating trip" });
     }
-    const trip = await TripsModel.findById(tripId);
-
-    if (!trip) {
-      return res.status(404).json({ status: "error", msg: "ino trip found" });
-    }
-
-    const updateTrip = {};
-    if ("name" in req.body) updateTrip.name = req.body.name;
-    if ("country" in req.body) updateTrip.country = req.body.country;
-    if ("city" in req.body) updateTrip.city = req.body.city;
-    if ("budget" in req.body) updateTrip.budget = req.body.budget;
-    if ("days" in req.body) updateTrip.days = req.body.days;
-
-    await TripsModel.findByIdAndUpdate(
-      tripId,
-      { $set: updateTrip },
-      { new: true }
-    );
-    res.json({ status: "ok", msg: "trip updated" });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ status: "error", msg: "error updating trip" });
-  }
 };
 
 // need to figure out how to update flights.
@@ -549,6 +553,27 @@ const deleteItineraryFromTrip = async (req, res) => {
     }
 };
 
+const getAllItineraryFromTrip = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const trip = await TripsModel.findById(id, "itineraries");
+
+        if (!trip) {
+            return res
+                .status(404)
+                .json({ status: "error", msg: "Trip not found" });
+        }
+
+        res.status(200).json({
+            status: "ok",
+            msg: "itinerary retrieved",
+            itineraries: trip.itineraries,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error retrieving itineraries" });
+    }
+};
 module.exports = {
     seedTrips,
     getAllTrips,
@@ -563,5 +588,6 @@ module.exports = {
     addActivitiesToTrip,
     delActivitiesFromTrip,
     addItineraryToTrip,
-    deleteItineraryFromTrip
+    deleteItineraryFromTrip,
+    getAllItineraryFromTrip
 };
