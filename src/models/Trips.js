@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const TripsSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, minLength: 1 },
-    country: { type: String, required: true, minLength: 1 },
-    city: { type: String, required: true, minLength: 1 },
-    budget: { type: Number, required: true, minLength: 1 },
-    days: { type: Number, required: true, minLength: 1 },
+    name: { type: String, default: "Unamed Trip" },
+    country: { type: String, default: "" },
+    city: { type: String, default: "" },
+    budget: { type: Number, default: 0 },
+    days: { type: Number, default: 0 },
     flights: {
       type: [mongoose.Schema.Types.ObjectId],
       required: false,
@@ -27,3 +27,5 @@ const TripsSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Trips", TripsSchema);
+
+// days: { type: Number, default: "", minLength: 1 },
