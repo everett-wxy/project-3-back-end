@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const TripsModel = require("./trips");
+const { ObjectId } = require("mongoose").Types;
 
 const getAccomsByCity = async (req, res) => {
   try {
@@ -21,8 +22,14 @@ const getAccomsByCity = async (req, res) => {
 
 const getAccomsById = async (req, res) => {
   try {
+    if (!req.body._id || !ObjectId.isValid(req.body._id)) {
+      return res
+        .status(400)
+        .json({ status: "error", msg: "Invalid or missing accom ID" });
+    }
+
     const accoms = mongoose.connection.collection("Hotels");
-    const data = await accoms.find({ _id: req.body._id }).toArray();
+    const data = await accoms.findOne({ _id: new ObjectId(req.body._id) });
 
     if (data.length > 0) {
       res.status(200).json(data);

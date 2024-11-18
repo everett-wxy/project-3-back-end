@@ -52,9 +52,6 @@ const getAllTrips = async (req, res) => {
       return res.status(400).json({ msg: "user not found" });
     }
     const trips = await TripsModel.find({ owner: user._id }).populate("owner");
-    // .populate("flights")// Populate the 'flights' field
-    // .populate("accommodations") // Populate the 'accommodations' field
-    // .populate("activities"); // Populate the 'activities' field
 
     if (trips.length > 0) {
       return res.json(trips);
@@ -76,7 +73,7 @@ const getOneTrip = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(tripId)) {
       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
     } else {
-      const trip = await TripsModel.findById(tripId).populate("accoms");
+      const trip = await TripsModel.findById(tripId);
 
       if (trip) {
         res.json(trip);
