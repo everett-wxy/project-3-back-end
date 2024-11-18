@@ -14,6 +14,7 @@ const auth = require("./src/routers/auth");
 const roles = require("./src/routers/roles");
 const accoms = require("./src/routers/accommodations");
 const restaurants = require("./src/routers/restaurants");
+const activities = require("./src/routers/activities");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -35,7 +36,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/WanderGoWhere", trips);
 app.use("/WanderGoWhere", accoms);
 app.use("/WanderGoWhere", restaurants);
-// app.use("/WanderGoWhere", activities);
+app.use("/WanderGoWhere", activities);
 app.use("/WanderGoWhere", flights);
 app.use("/WanderGoWhere", auth);
 app.use("/WanderGoWhere", roles);

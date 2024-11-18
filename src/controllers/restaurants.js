@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const TripsModel = require("./trips");
 
 const getRestaurantsByCity = async (req, res) => {
   try {
