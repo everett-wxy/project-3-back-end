@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-// const {} = require("../controllers/activities");
+const { getActivitiesByCity } = require("../controllers/activities");
 
+router.post("/activities", getActivitiesByCity);
 
-module.exports = router
+module.exports = router;
