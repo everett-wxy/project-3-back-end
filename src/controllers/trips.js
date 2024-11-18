@@ -55,12 +55,14 @@ const getAllTrips = async (req, res) => {
     if (!user) {
       return res.status(400).json({ msg: "user not found" });
     }
+
     const trips = await TripsModel.find({ owner: user._id })
       .populate("owner")
       .populate("restaurants")
       .populate("activities")
       .populate("accoms");
     // .populate("flights")// Populate the 'flights' field
+
 
     if (trips.length > 0) {
       return res.json(trips);

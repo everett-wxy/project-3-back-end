@@ -16,3 +16,4 @@ const AccommodationsSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Hotels", AccommodationsSchema);
+
