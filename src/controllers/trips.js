@@ -366,6 +366,38 @@ const addActivitiesToTrip = async (req, res) => {
   }
 };
 
+const delActivitiesFromTrip = async (req, res) => {
+  try {
+    const user = await AuthModel.findOne({ email: req.decoded.email });
+    if (!user) {
+      return res.status(400).json({ status: "error", msg: "user not found" });
+    }
+
+    const trip = await TripsModel.findById(req.params.id);
+    if (!trip) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Trip ID not found" });
+    }
+
+    const activities = await mongoose.connection
+      .collection("Activities")
+      .findOne({ _id: new mongoose.Types.ObjectId(req.body.activitiesId) });
+    if (!activities) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Activities ID not found" });
+    }
+
+    trip.activities.pull(req.body.activitiesId);
+    await trip.save();
+    res.status(200).json({ status: "ok", msg: "activities deleted" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "ok", msg: "error deleting activites" });
+  }
+};
+
 module.exports = {
   seedTrips,
   getAllTrips,
@@ -378,4 +410,5 @@ module.exports = {
   addRestaurantsToTrip,
   delRestaurantsFromTrip,
   addActivitiesToTrip,
+  delActivitiesFromTrip,
 };
