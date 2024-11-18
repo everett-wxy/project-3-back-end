@@ -9,4 +9,3 @@ const AccommodationsSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Accommodations", AccommodationsSchema);
-
