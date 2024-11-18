@@ -33,16 +33,16 @@ const TripsSchema = new mongoose.Schema(
             ref: "Hotels",
         },
         restaurants: {
-      type: [mongoose.Schema.Types.ObjectId],
-      required: false,
-      ref: "Restaurants",
-    },
-    activities: {
-      type: [mongoose.Schema.Types.ObjectId],
-      required: false,
-      ref: "Activities",
-    },
-    owner: {
+            type: [mongoose.Schema.Types.ObjectId],
+            required: false,
+            ref: "Restaurants",
+        },
+        activities: {
+            type: [mongoose.Schema.Types.ObjectId],
+            required: false,
+            ref: "Activities",
+        },
+        owner: {
             type: [mongoose.Schema.Types.ObjectId],
             required: true,
             ref: "Auth",
