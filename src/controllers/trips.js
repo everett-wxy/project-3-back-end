@@ -1,6 +1,10 @@
 const TripsModel = require("../models/Trips");
 const FlightModel = require("../models/Flights");
 const AuthModel = require("../models/Auth");
+const RestaurantsModel = require("../models/restaurants");
+const ActivitiesModel = require("../models/Activities");
+const AccommodationsModel = require("../models/Accommodations");
+
 const mongoose = require("mongoose");
 
 const seedTrips = async (req, res) => {
@@ -45,18 +49,20 @@ const seedTrips = async (req, res) => {
 };
 
 const getAllTrips = async (req, res) => {
-    //by user.
-    try {
-        const user = await AuthModel.findOne({ email: req.decoded.email });
-        if (!user) {
-            return res.status(400).json({ msg: "user not found" });
-        }
-        const trips = await TripsModel.find({ owner: user._id }).populate(
-            "owner"
-        );
-        // .populate("flights")// Populate the 'flights' field
-        // .populate("accommodations") // Populate the 'accommodations' field
-        // .populate("activities"); // Populate the 'activities' field
+  //by user.
+  try {
+    const user = await AuthModel.findOne({ email: req.decoded.email });
+    if (!user) {
+      return res.status(400).json({ msg: "user not found" });
+    }
+
+    const trips = await TripsModel.find({ owner: user._id })
+      .populate("owner")
+      .populate("restaurants")
+      .populate("activities")
+      .populate("accoms");
+    // .populate("flights")// Populate the 'flights' field
+
 
         if (trips.length > 0) {
             return res.json(trips);
@@ -123,48 +129,83 @@ const deleteOneTrip = async (req, res) => {
     }
 };
 
-// need to figure out how to update flights.
 const updateOneTrip = async (req, res) => {
     try {
         const tripId = req.params.id;
 
-        if (!mongoose.Types.ObjectId.isValid(tripId)) {
-            return res
-                .status(400)
-                .json({ status: "error", msg: "invalid trip ID" });
-        }
-        const trip = await TripsModel.findById(tripId);
-        const updatedFlight = await FlightModel.findByIdAndUpdate(
-            trip.flights._id,
-            { name: req.body.flights.name },
-            { new: true }
-        );
-
-        if (trip) {
-            await TripsModel.findByIdAndUpdate(tripId, {
-                name: req.body.name || trip.name,
-                country: req.body.country || trip.country,
-                city: req.body.city || trip.city,
-                budget: req.body.budget || trip.budget,
-                days: req.body.days || trip.days,
-            });
-
-            await FlightModel.findByIdAndUpdate(
-                trip.flights._id,
-                { name: req.body.flights.name },
-                { new: true }
-            );
-            res.json({ status: "ok", msg: "trip updated" });
-        } else {
-            return res
-                .status(400)
-                .json({ status: "error", msg: "no trip found" });
-        }
-    } catch (error) {
-        console.error(error.message);
-        res.status(400).json({ status: "error", msg: "error updating trip" });
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ status: "error", msg: "invalid trip ID" });
     }
+    const trip = await TripsModel.findById(tripId);
+
+    if (!trip) {
+      return res.status(404).json({ status: "error", msg: "ino trip found" });
+    }
+
+    const updateTrip = {};
+    if ("name" in req.body) updateTrip.name = req.body.name;
+    if ("country" in req.body) updateTrip.country = req.body.country;
+    if ("city" in req.body) updateTrip.city = req.body.city;
+    if ("budget" in req.body) updateTrip.budget = req.body.budget;
+    if ("days" in req.body) updateTrip.days = req.body.days;
+
+    await TripsModel.findByIdAndUpdate(
+      tripId,
+      { $set: updateTrip },
+      { new: true }
+    );
+    res.json({ status: "ok", msg: "trip updated" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "error", msg: "error updating trip" });
+  }
 };
+
+// need to figure out how to update flights.
+// const updateOneTrip = async (req, res) => {
+//   try {
+//     const tripId = req.params.id;
+
+//     if (!mongoose.Types.ObjectId.isValid(tripId)) {
+//       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
+//     }
+//     const trip = await TripsModel.findById(tripId);
+//     const updatedFlight = await FlightModel.findByIdAndUpdate(
+//       trip.flights._id,
+//       { name: req.body.flights.name },
+//       { new: true }
+//     );
+
+//     const updateTrip = {};
+//     if ("name" in req.body) createTrip.name = req.body.name;
+//     if ("country" in req.body) createTrip.country = req.body.country;
+//     if ("city" in req.body) createTrip.city = req.body.city;
+//     if ("budget" in req.body) createTrip.budget = req.body.budget;
+//     if ("days" in req.body) createTrip.days = req.body.days;
+
+//     if (trip) {
+//       await TripsModel.findByIdAndUpdate(tripId, {
+//         name: req.body.name || trip.name,
+//         country: req.body.country || trip.country,
+//         city: req.body.city || trip.city,
+//         budget: req.body.budget || trip.budget,
+//         days: req.body.days || trip.days,
+//       });
+
+//       await FlightModel.findByIdAndUpdate(
+//         trip.flights._id,
+//         { name: req.body.flights.name },
+//         { new: true }
+//       );
+//       res.json({ status: "ok", msg: "trip updated" });
+//     } else {
+//       return res.status(400).json({ status: "error", msg: "no trip found" });
+//     }
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(400).json({ status: "error", msg: "error updating trip" });
+//   }
+// };
 
 const addTrips = async (req, res) => {
     try {
