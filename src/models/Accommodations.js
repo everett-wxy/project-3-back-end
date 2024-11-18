@@ -1,11 +1,5 @@
 const mongoose = require("mongoose");
 
-const AccommodationsSchema = new mongoose.Schema(
-  {
-    // details here
-    name: { type: String, required: true },
-  },
-  { collection: "accommodations" }
-);
+const HotelsSchema = new mongoose.Schema({}, { collection: "Hotels" });
 
-module.exports = mongoose.model("Accommodations", AccommodationsSchema);
+module.exports = mongoose.model("Hotels", HotelsSchema);
