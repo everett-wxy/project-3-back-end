@@ -111,7 +111,6 @@ const deleteOneTrip = async (req, res) => {
   }
 };
 
-// need to figure out how to update flights.
 const updateOneTrip = async (req, res) => {
   try {
     const tripId = req.params.id;
@@ -120,35 +119,75 @@ const updateOneTrip = async (req, res) => {
       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
     }
     const trip = await TripsModel.findById(tripId);
-    const updatedFlight = await FlightModel.findByIdAndUpdate(
-      trip.flights._id,
-      { name: req.body.flights.name },
+
+    if (!trip) {
+      return res.status(404).json({ status: "error", msg: "ino trip found" });
+    }
+
+    const updateTrip = {};
+    if ("name" in req.body) updateTrip.name = req.body.name;
+    if ("country" in req.body) updateTrip.country = req.body.country;
+    if ("city" in req.body) updateTrip.city = req.body.city;
+    if ("budget" in req.body) updateTrip.budget = req.body.budget;
+    if ("days" in req.body) updateTrip.days = req.body.days;
+
+    await TripsModel.findByIdAndUpdate(
+      tripId,
+      { $set: updateTrip },
       { new: true }
     );
-
-    if (trip) {
-      await TripsModel.findByIdAndUpdate(tripId, {
-        name: req.body.name || trip.name,
-        country: req.body.country || trip.country,
-        city: req.body.city || trip.city,
-        budget: req.body.budget || trip.budget,
-        days: req.body.days || trip.days,
-      });
-
-      await FlightModel.findByIdAndUpdate(
-        trip.flights._id,
-        { name: req.body.flights.name },
-        { new: true }
-      );
-      res.json({ status: "ok", msg: "trip updated" });
-    } else {
-      return res.status(400).json({ status: "error", msg: "no trip found" });
-    }
+    res.json({ status: "ok", msg: "trip updated" });
   } catch (error) {
     console.error(error.message);
-    res.status(400).json({ status: "error", msg: "error updating trip" });
+    res.status(500).json({ status: "error", msg: "error updating trip" });
   }
 };
+
+// need to figure out how to update flights.
+// const updateOneTrip = async (req, res) => {
+//   try {
+//     const tripId = req.params.id;
+
+//     if (!mongoose.Types.ObjectId.isValid(tripId)) {
+//       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
+//     }
+//     const trip = await TripsModel.findById(tripId);
+//     const updatedFlight = await FlightModel.findByIdAndUpdate(
+//       trip.flights._id,
+//       { name: req.body.flights.name },
+//       { new: true }
+//     );
+
+//     const updateTrip = {};
+//     if ("name" in req.body) createTrip.name = req.body.name;
+//     if ("country" in req.body) createTrip.country = req.body.country;
+//     if ("city" in req.body) createTrip.city = req.body.city;
+//     if ("budget" in req.body) createTrip.budget = req.body.budget;
+//     if ("days" in req.body) createTrip.days = req.body.days;
+
+//     if (trip) {
+//       await TripsModel.findByIdAndUpdate(tripId, {
+//         name: req.body.name || trip.name,
+//         country: req.body.country || trip.country,
+//         city: req.body.city || trip.city,
+//         budget: req.body.budget || trip.budget,
+//         days: req.body.days || trip.days,
+//       });
+
+//       await FlightModel.findByIdAndUpdate(
+//         trip.flights._id,
+//         { name: req.body.flights.name },
+//         { new: true }
+//       );
+//       res.json({ status: "ok", msg: "trip updated" });
+//     } else {
+//       return res.status(400).json({ status: "error", msg: "no trip found" });
+//     }
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(400).json({ status: "error", msg: "error updating trip" });
+//   }
+// };
 
 const addTrips = async (req, res) => {
   try {

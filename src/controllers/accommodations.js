@@ -31,7 +31,7 @@ const getAccomsById = async (req, res) => {
     const accoms = mongoose.connection.collection("Hotels");
     const data = await accoms.findOne({ _id: new ObjectId(req.body._id) });
 
-    if (data.length > 0) {
+    if (data) {
       res.status(200).json(data);
     } else {
       return res.status(400).json({ status: "error", msg: "no accoms found" });
