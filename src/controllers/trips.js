@@ -252,6 +252,45 @@ const delAccomsFromTrip = async (req, res) => {
   }
 };
 
+const addRestaurantsToTrip = async (req, res) => {
+  try {
+    const user = await AuthModel.findOne({ email: req.decoded.email });
+    if (!user) {
+      return res.status(400).json({ status: "error", msg: "user not found" });
+    }
+
+    //trip id -planboard should have paramsid Restaurants id req.param.id restaurantId
+    const trip = await TripsModel.findById(req.params.id);
+    if (!trip) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Trip ID not found" });
+    }
+
+    const restaurants = await mongoose.connection
+      .collection("Restaurants")
+      .findOne({ _id: new mongoose.Types.ObjectId(req.body.restaurantId) });
+    if (!restaurants) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Restaurant ID not found" });
+    }
+
+    if (trip.restaurants.includes(req.body.restaurantId)) {
+      return res
+        .status(400)
+        .json({ status: "error", msg: "Restaurant already added to trip" });
+    }
+
+    trip.restaurants.push(req.body.restaurantId);
+    await trip.save();
+    res.status(200).json({ status: "ok", msg: "restaurant added" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ status: "error", msg: "error adding restaurants" });
+  }
+};
+
 module.exports = {
   seedTrips,
   getAllTrips,
@@ -261,4 +300,5 @@ module.exports = {
   addTrips,
   addAccomsToTrip,
   delAccomsFromTrip,
+  addRestaurantsToTrip,
 };
