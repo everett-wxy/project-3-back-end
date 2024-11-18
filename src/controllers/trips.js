@@ -71,7 +71,7 @@ const getAllTrips = async (req, res) => {
 
 const getOneTrip = async (req, res) => {
   try {
-    const tripId = req.body.id;
+    const tripId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(tripId)) {
       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
@@ -154,46 +154,29 @@ const updateOneTrip = async (req, res) => {
 };
 
 const addTrips = async (req, res) => {
-  // if the trip name, and city is the same, then will throw error because duplicate entry. Did not put country on assumption you can plan more than one city in the country (stretch goal if doing more than one city in a country)
-
-  /* 
-  e.g:
-  1st entry - name: "Birthday trip", country: "Japan". city: "Tokyo"
-  2nd entry - name: "Birthday trip", country: "Japan", city: "Osaka"
-  */
-
-  // ben to add in blank fields check
-
   try {
     const user = await AuthModel.findOne({ email: req.decoded.email });
     if (!user) {
       return res.status(400).json({ msg: "user not found" });
     }
-    const existingTrip = await TripsModel.findOne({
-      name: req.body.name,
-      city: req.body.city,
-    });
 
-    if (existingTrip) {
-      res.status(400).json({
-        status: "error",
-        msg: "A trip with the same name and city exists",
-      });
-    } else {
-      const newTrip = new TripsModel({
-        name: req.body.name,
-        country: req.body.country,
-        city: req.body.city,
-        budget: req.body.budget,
-        days: req.body.days,
-        owner: user._id,
-      });
-      await newTrip.save();
-      res.json({ status: "ok", msg: "trip added" });
-    }
+    const createTrip = {};
+    if ("name" in req.body) createTrip.name = req.body.name;
+    if ("country" in req.body) createTrip.country = req.body.country;
+    if ("city" in req.body) createTrip.city = req.body.city;
+    if ("budget" in req.body) createTrip.budget = req.body.budget;
+    if ("days" in req.body) createTrip.days = req.body.days;
+
+    const createdTrip = new TripsModel({
+      ...createTrip,
+      owner: user._id,
+    });
+    await createdTrip.save();
+    res.status(200).json({ createdTrip });
+    // }
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ status: "error", msg: "error adding trip" });
+    return res.status(500).json({ status: "error", msg: error.message });
   }
 };
 
@@ -218,6 +201,13 @@ const addAccomsToTrip = async (req, res) => {
         .status(404)
         .json({ status: "error", msg: "Accoms ID not found" });
     }
+
+    if (trip.accoms.includes(req.body.accomsId)) {
+      return res
+        .status(409)
+        .json({ status: "error", msg: "Accommodation already added to trip" });
+    }
+
     trip.accoms.push(req.body.accomsId);
     await trip.save();
     res.status(200).json({ status: "ok", msg: "accoms added" });
@@ -229,6 +219,39 @@ const addAccomsToTrip = async (req, res) => {
   }
 };
 
+const delAccomsFromTrip = async (req, res) => {
+  try {
+    const user = await AuthModel.findOne({ email: req.decoded.email });
+    if (!user) {
+      return res.status(400).json({ msg: "user not found" });
+    }
+
+    const trip = await TripsModel.findById(req.params.id);
+    if (!trip) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Trip ID not found" });
+    }
+    const accoms = await mongoose.connection
+      .collection("Hotels")
+      .findOne({ _id: new mongoose.Types.ObjectId(req.body.accomsId) });
+    if (!accoms) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Accoms ID not found" });
+    }
+
+    trip.accoms.pull(req.body.accomsId);
+    await trip.save();
+    res.status(200).json({ status: "ok", msg: "accoms deleted" });
+  } catch (error) {
+    console.error(error.message);
+    return res
+      .status(500)
+      .json({ status: "error", msg: "error deleting accoms" });
+  }
+};
+
 module.exports = {
   seedTrips,
   getAllTrips,
@@ -237,4 +260,5 @@ module.exports = {
   updateOneTrip,
   addTrips,
   addAccomsToTrip,
+  delAccomsFromTrip,
 };
