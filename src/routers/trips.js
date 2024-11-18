@@ -11,6 +11,7 @@ const {
   delAccomsFromTrip,
   addRestaurantsToTrip,
   delRestaurantsFromTrip,
+  addActivitiesToTrip,
 } = require("../controllers/trips");
 
 const {
@@ -35,5 +36,8 @@ router.delete("/trips/:id/accoms", auth, delAccomsFromTrip);
 // restaurants
 router.post("/trips/:id/restaurants", auth, addRestaurantsToTrip);
 router.delete("/trips/:id/restaurants", auth, delRestaurantsFromTrip);
+
+// activities
+router.post("/trips/:id/activities", auth, addActivitiesToTrip);
 
 module.exports = router;
