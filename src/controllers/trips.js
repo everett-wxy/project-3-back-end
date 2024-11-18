@@ -76,7 +76,7 @@ const getOneTrip = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(tripId)) {
       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
     } else {
-      const trip = await TripsModel.findById(tripId);
+      const trip = await TripsModel.findById(tripId).populate("accoms");
 
       if (trip) {
         res.json(trip);
