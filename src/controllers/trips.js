@@ -1,6 +1,10 @@
 const TripsModel = require("../models/Trips");
 const FlightModel = require("../models/Flights");
 const AuthModel = require("../models/Auth");
+const RestaurantsModel = require("../models/restaurants");
+const ActivitiesModel = require("../models/Activities");
+const AccommodationsModel = require("../models/Accommodations");
+
 const mongoose = require("mongoose");
 
 const seedTrips = async (req, res) => {
@@ -51,7 +55,14 @@ const getAllTrips = async (req, res) => {
     if (!user) {
       return res.status(400).json({ msg: "user not found" });
     }
-    const trips = await TripsModel.find({ owner: user._id }).populate("owner");
+
+    const trips = await TripsModel.find({ owner: user._id })
+      .populate("owner")
+      .populate("restaurants")
+      .populate("activities")
+      .populate("accoms");
+    // .populate("flights")// Populate the 'flights' field
+
 
     if (trips.length > 0) {
       return res.json(trips);
