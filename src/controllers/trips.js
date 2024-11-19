@@ -503,9 +503,11 @@ const addItineraryToTrip = async (req, res) => {
         if (!updatedTrip) {
             return res.status(404).send({ message: "trip id not found" });
         }
+        const newItineraryId = updatedTrip.itineraries[updatedTrip.itineraries.length - 1]._id;
         res.status(200).json({
             status: "ok",
             msg: "itinerary added",
+            itineraryId: newItineraryId,
             updatedTrip,
         });
     } catch (error) {
@@ -574,6 +576,35 @@ const getAllItineraryFromTrip = async (req, res) => {
         res.status(500).json({ message: "Error retrieving itineraries" });
     }
 };
+
+const getItineraryById = async (req, res) => {
+    try {
+        const { id } = req.params; // Trip ID
+        const { itineraryId } = req.body; // Itinerary ID
+
+        const trip = await TripsModel.findById(id);
+
+        if (!trip) {
+            return res.status(404).json({ status: "error", msg: "Trip not found" });
+        }
+
+        const itinerary = trip.itineraries.id(itineraryId);
+
+        if (!itinerary) {
+            return res.status(404).json({ status: "error", msg: "Itinerary not found" });
+        }
+
+        res.status(200).json({
+            status: "ok",
+            msg: "Itinerary retrieved",
+            itinerary,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error retrieving itinerary" });
+    }
+};
+
 module.exports = {
     seedTrips,
     getAllTrips,
@@ -589,5 +620,6 @@ module.exports = {
     delActivitiesFromTrip,
     addItineraryToTrip,
     deleteItineraryFromTrip,
-    getAllItineraryFromTrip
+    getAllItineraryFromTrip,
+    getItineraryById
 };
