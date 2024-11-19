@@ -184,52 +184,6 @@ const updateOneTrip = async (req, res) => {
   }
 };
 
-// need to figure out how to update flights.
-// const updateOneTrip = async (req, res) => {
-//   try {
-//     const tripId = req.params.id;
-
-//     if (!mongoose.Types.ObjectId.isValid(tripId)) {
-//       return res.status(400).json({ status: "error", msg: "invalid trip ID" });
-//     }
-//     const trip = await TripsModel.findById(tripId);
-//     const updatedFlight = await FlightModel.findByIdAndUpdate(
-//       trip.flights._id,
-//       { name: req.body.flights.name },
-//       { new: true }
-//     );
-
-//     const updateTrip = {};
-//     if ("name" in req.body) createTrip.name = req.body.name;
-//     if ("country" in req.body) createTrip.country = req.body.country;
-//     if ("city" in req.body) createTrip.city = req.body.city;
-//     if ("budget" in req.body) createTrip.budget = req.body.budget;
-//     if ("days" in req.body) createTrip.days = req.body.days;
-
-//     if (trip) {
-//       await TripsModel.findByIdAndUpdate(tripId, {
-//         name: req.body.name || trip.name,
-//         country: req.body.country || trip.country,
-//         city: req.body.city || trip.city,
-//         budget: req.body.budget || trip.budget,
-//         days: req.body.days || trip.days,
-//       });
-
-//       await FlightModel.findByIdAndUpdate(
-//         trip.flights._id,
-//         { name: req.body.flights.name },
-//         { new: true }
-//       );
-//       res.json({ status: "ok", msg: "trip updated" });
-//     } else {
-//       return res.status(400).json({ status: "error", msg: "no trip found" });
-//     }
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(400).json({ status: "error", msg: "error updating trip" });
-//   }
-// };
-
 const addTrips = async (req, res) => {
   try {
     const user = await AuthModel.findOne({ email: req.decoded.email });
@@ -504,25 +458,26 @@ const addItineraryToTrip = async (req, res) => {
     const { id } = req.params; // getting trip Id from params
     const itinerary = req.body.itinerary; // getting itinerary data from request body
 
-        const updatedTrip = await TripsModel.findByIdAndUpdate(
-            id,
-            { $push: { itineraries: itinerary } }, // adding itinerary to array
-            { new: true } // return updated document
-        );
-        if (!updatedTrip) {
-            return res.status(404).send({ message: "trip id not found" });
-        }
-        const newItineraryId = updatedTrip.itineraries[updatedTrip.itineraries.length - 1]._id;
-        res.status(200).json({
-            status: "ok",
-            msg: "itinerary added",
-            itineraryId: newItineraryId,
-            updatedTrip,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send({ message: "Error updating trip with itinerary" });
+    const updatedTrip = await TripsModel.findByIdAndUpdate(
+      id,
+      { $push: { itineraries: itinerary } }, // adding itinerary to array
+      { new: true } // return updated document
+    );
+    if (!updatedTrip) {
+      return res.status(404).send({ message: "trip id not found" });
     }
+    const newItineraryId =
+      updatedTrip.itineraries[updatedTrip.itineraries.length - 1]._id;
+    res.status(200).json({
+      status: "ok",
+      msg: "itinerary added",
+      itineraryId: newItineraryId,
+      updatedTrip,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error updating trip with itinerary" });
+  }
 };
 
 const deleteItineraryFromTrip = async (req, res) => {
@@ -583,31 +538,33 @@ const getAllItineraryFromTrip = async (req, res) => {
 };
 
 const getItineraryById = async (req, res) => {
-    try {
-        const { id } = req.params; // Trip ID
-        const { itineraryId } = req.body; // Itinerary ID
+  try {
+    const { id } = req.params; // Trip ID
+    const { itineraryId } = req.body; // Itinerary ID
 
-        const trip = await TripsModel.findById(id);
+    const trip = await TripsModel.findById(id);
 
-        if (!trip) {
-            return res.status(404).json({ status: "error", msg: "Trip not found" });
-        }
-
-        const itinerary = trip.itineraries.id(itineraryId);
-
-        if (!itinerary) {
-            return res.status(404).json({ status: "error", msg: "Itinerary not found" });
-        }
-
-        res.status(200).json({
-            status: "ok",
-            msg: "Itinerary retrieved",
-            itinerary,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error retrieving itinerary" });
+    if (!trip) {
+      return res.status(404).json({ status: "error", msg: "Trip not found" });
     }
+
+    const itinerary = trip.itineraries.id(itineraryId);
+
+    if (!itinerary) {
+      return res
+        .status(404)
+        .json({ status: "error", msg: "Itinerary not found" });
+    }
+
+    res.status(200).json({
+      status: "ok",
+      msg: "Itinerary retrieved",
+      itinerary,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error retrieving itinerary" });
+  }
 };
 
 module.exports = {
@@ -626,6 +583,6 @@ module.exports = {
   delActivitiesFromTrip,
   addItineraryToTrip,
   deleteItineraryFromTrip,
-  getAllItineraryFromTrip,,
-    getItineraryById
+  getAllItineraryFromTrip,
+  getItineraryById,
 };
