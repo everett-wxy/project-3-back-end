@@ -63,7 +63,6 @@ const getAllTrips = async (req, res) => {
       .populate("accoms");
     // .populate("flights")// Populate the 'flights' field
 
-
     if (trips.length > 0) {
       return res.json(trips);
     } else {
@@ -73,6 +72,33 @@ const getAllTrips = async (req, res) => {
     console.error(error.message);
     return res
       .status(400)
+      .json({ status: "error", msg: "error getting trips" });
+  }
+};
+
+const getOnePopulatedTrip = async (req, res) => {
+  try {
+    const tripId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(tripId)) {
+      return res.status(400).json({ status: "error", msg: "invalid trip ID" });
+    } else {
+      const trip = await TripsModel.findById(tripId)
+        .populate("owner")
+        .populate("restaurants")
+        .populate("activities")
+        .populate("accoms");
+
+      if (trip) {
+        res.json(trip);
+      } else {
+        res.status(400).json({ status: "error", msg: "no trips found" });
+      }
+    }
+  } catch (error) {
+    console.error(error.message);
+    return res
+      .status(500)
       .json({ status: "error", msg: "error getting trips" });
   }
 };
@@ -449,6 +475,7 @@ module.exports = {
   seedTrips,
   getAllTrips,
   getOneTrip,
+  getOnePopulatedTrip,
   deleteOneTrip,
   updateOneTrip,
   addTrips,
