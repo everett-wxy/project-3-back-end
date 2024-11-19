@@ -14,7 +14,7 @@ const getRestaurantsByCity = async (req, res) => {
     }
   } catch (error) {
     console.error(error.message);
-    res.status(400).json({ status: "error", msg: "error getting restaurant" });
+    res.status(500).json({ status: "error", msg: "error getting restaurant" });
   }
 };
 
