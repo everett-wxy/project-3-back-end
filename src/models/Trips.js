@@ -11,6 +11,7 @@ const ItinerariesSchema = new mongoose.Schema({
     duration: String,
     price: Number,
     flightType: String,
+    flightCarrier: String,
     isReturn: Boolean,
 });
 
