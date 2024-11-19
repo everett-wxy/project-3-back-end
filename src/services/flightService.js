@@ -55,20 +55,24 @@ const getFlightData = async (
         });
 
         if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(
-                `Error ${res.status}: ${
-                    errorData.error.message || res.statusText || "Unknown error"
-                }`
-            );
+            let errorMessage = `Error ${res.status}: ${res.statusText || "Unknown error"}`;
+            try {
+                const errorData = await res.json();
+                errorMessage = `Error ${res.status}: ${
+                    errorData.message || errorData.error?.message || res.statusText || "Unknown error"
+                }`;
+            } catch (jsonError) {
+                console.warn("Failed to parse error response JSON:", jsonError);
+            }
+            throw new Error(errorMessage);
         }
 
-        const { data } = await res.json();
+        const { data, dictionaries } = await res.json();
         if (!data || data.length === 0) {
             throw new Error("No flight data available for the given query.");
         }
 
-        return data;
+        return {data, dictionaries};
     } catch (err) {
         console.error("Error in getFlightData:", err);
         throw new Error("Error fetching flight data: " + err.message);
