@@ -54,4 +54,3 @@ const TripsSchema = new mongoose.Schema(
 
 module.exports = mongoose.model("Trips", TripsSchema);
 
-// days: { type: Number, default: "", minLength: 1 },
