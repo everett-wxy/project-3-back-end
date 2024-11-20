@@ -15,7 +15,7 @@ const getAccomsByCity = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     return res
-      .status(400)
+      .status(500)
       .json({ stage: "error", msg: "error getting accoms" });
   }
 };
