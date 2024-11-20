@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const {
-    getAllFlights,
-    seedFlights,
-    fetchFlights,
-    validateFlightQuery
+  getAllFlights,
+  seedFlights,
+  fetchFlights,
 } = require("../controllers/flights");
 
 // Evertt: No need for seedFlights and getAllFlights 
