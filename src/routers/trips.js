@@ -28,7 +28,7 @@ const {
 const { checkErrors } = require("../validators/checkErrors");
 const { auth, authAdmin } = require("../middleware/auth");
 
-router.get("/trips/seed", seedTrips); // authAdmin
+// router.get("/trips/seed", seedTrips); // authAdmin // Everett: no need
 router.get("/trips", auth, getAllTrips);
 router.get("/trips/:id", auth, validateIdInParam, checkErrors, getOneTrip);
 router.get("/trips/:id", auth, getOneTrip);
