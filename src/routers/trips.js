@@ -4,6 +4,7 @@ const {
   seedTrips,
   getAllTrips,
   getOneTrip,
+  getOnePopulatedTrip,
   deleteOneTrip,
   updateOneTrip,
   addTrips,
@@ -31,6 +32,7 @@ router.get("/trips/seed", seedTrips); // authAdmin
 router.get("/trips", auth, getAllTrips);
 router.get("/trips/:id", auth, validateIdInParam, checkErrors, getOneTrip);
 router.get("/trips/:id", auth, getOneTrip);
+router.get("/onetrip/:id", auth, getOnePopulatedTrip);
 
 router.delete("/trips", auth, validateIdInBody, checkErrors, deleteOneTrip);
 router.patch("/trips/:id", auth, checkErrors, updateOneTrip);
