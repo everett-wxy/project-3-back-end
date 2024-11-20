@@ -4,10 +4,11 @@ const {
     getAllFlights,
     seedFlights,
     fetchFlights,
+    validateFlightQuery
 } = require("../controllers/flights");
 
 router.get("/flights/seed", seedFlights);
 // router.get("/flights", getAllFlights);
-router.get("/flights", fetchFlights);
+router.get("/flights", validateFlightQuery, fetchFlights);
 
 module.exports = router;
