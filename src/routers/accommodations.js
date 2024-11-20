@@ -4,7 +4,6 @@ const {
   getAccomsByCity,
   getAccomsById,
 } = require("../controllers/accommodations");
-// const {} = require("../controllers/accommodations");
 
 router.post("/accoms", getAccomsByCity);
 router.post("/accoms/id", getAccomsById);
