@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const {
-    getAllFlights,
-    seedFlights,
-    fetchFlights,
+  getAllFlights,
+  seedFlights,
+  fetchFlights,
 } = require("../controllers/flights");
 
 router.get("/flights/seed", seedFlights);
