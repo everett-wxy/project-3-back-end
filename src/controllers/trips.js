@@ -1,5 +1,4 @@
 const TripsModel = require("../models/Trips");
-const FlightModel = require("../models/Flights");
 const AuthModel = require("../models/Auth");
 const RestaurantsModel = require("../models/restaurants");
 const ActivitiesModel = require("../models/Activities");
@@ -7,47 +6,6 @@ const AccommodationsModel = require("../models/Accommodations");
 
 const mongoose = require("mongoose");
 const Trips = require("../models/Trips");
-
-// const seedTrips = async (req, res) => {
-//   try {
-//     await TripsModel.deleteMany({});
-
-//     await TripsModel.create([
-//       {
-//         name: "White Christmas",
-//         country: "Japan",
-//         city: "Tokyo",
-//         budget: "5000",
-//         days: "7",
-//         flights: "6736af60ee6c19031d9fee76",
-//         owner: "67379e0ff3692f9300930a52",
-//       },
-//       {
-//         name: "CNY Getaway",
-//         country: "New Zealand",
-//         city: "Christchurch",
-//         budget: "7000",
-//         days: "10",
-//         flights: "6736af60ee6c19031d9fee77",
-//         owner: "67379e0ff3692f9300930a52",
-//       },
-//       {
-//         name: "Birthday Trip",
-//         country: "Norway",
-//         city: "Tromso",
-//         budget: "10000",
-//         days: "10",
-//         flights: "6736af60ee6c19031d9fee78",
-//         owner: "67379e0ff3692f9300930a52",
-//       },
-//     ]);
-
-//     res.json({ status: "ok", msg: "seeding successful" });
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(400).json({ status: "error", msg: "seeding error" });
-//   }
-// };
 
 const getAllTrips = async (req, res) => {
   //by user.
@@ -62,7 +20,6 @@ const getAllTrips = async (req, res) => {
       .populate("restaurants")
       .populate("activities")
       .populate("accoms");
-    // .populate("flights")// Populate the 'flights' field
 
     if (trips.length > 0) {
       return res.json(trips);
@@ -567,7 +524,6 @@ const getItineraryById = async (req, res) => {
 };
 
 module.exports = {
-//   seedTrips,
   getAllTrips,
   getOneTrip,
   getOnePopulatedTrip,

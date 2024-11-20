@@ -6,7 +6,6 @@ const baseUrlSearchQueries =
 const originLocationCodeParameter = "&originLocationCode=";
 const destinationCodeParameter = "&destinationLocationCode=";
 const departureDateParameter = "&departureDate=";
-// const returnDateParameter = "&returnDate=";
 const cabinClassParameter = "&travelClass=";
 
 const getAccessToken = async () => {
@@ -56,14 +55,32 @@ const getFlightData = async (
 
         if (!res.ok) {
             let errorMessage = `Error ${res.status}: ${res.statusText || "Unknown error"}`;
+            let errorDetails = null;
+
             try {
+                // Attempt to parse the response body as JSON for detailed error info
                 const errorData = await res.json();
+                errorDetails = errorData;
+
+                // Construct a better error message based on API response
                 errorMessage = `Error ${res.status}: ${
-                    errorData.message || errorData.error?.message || res.statusText || "Unknown error"
+                    errorData.message ||
+                    errorData.error?.message ||
+                    res.statusText ||
+                    "Unknown error"
                 }`;
             } catch (jsonError) {
                 console.warn("Failed to parse error response JSON:", jsonError);
             }
+
+            // Log detailed error information
+            console.error("Request failed:", {
+                url,
+                status: res.status,
+                statusText: res.statusText,
+                errorDetails: errorDetails ? JSON.stringify(errorDetails, null, 2) : "No additional details",
+            });
+
             throw new Error(errorMessage);
         }
 
@@ -74,16 +91,19 @@ const getFlightData = async (
 
         return {data, dictionaries};
     } catch (err) {
-        console.error("Error in getFlightData:", err);
+        if (err.name === "FetchError" || err.message.includes("network")) {
+            console.error("Network or connectivity issue:", err);
+        } else {
+            console.error("Error in getFlightData:", {
+                message: err.message,
+                stack: err.stack,
+            });
+        }
+
         throw new Error("Error fetching flight data: " + err.message);
     }
+    
 };
 
-// getFlightData("SIN", "BKK", "2025-01-01", "2025-01-07", "ECONOMY")
-//     .then((data) => console.log(data))
-//     .catch((err) => console.error("Error in getFlightData:", err));
-
-// console.log("CLIENT_ID:", process.env.AMADEUS_ID);
-// console.log("CLIENT_SECRET:", process.env.AMADEUS_SECRET);
 
 module.exports = { getFlightData };
