@@ -74,7 +74,6 @@ const login = async (req, res) => {
       jwtid: uuidv4(),
     });
 
-    // if not used, to delete
     const refresh = jwt.sign(claims, process.env.REFRESH_SECRET, {
       expiresIn: "15d",
       jwtid: uuidv4(),

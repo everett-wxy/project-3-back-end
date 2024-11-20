@@ -7,11 +7,9 @@ const rateLimit = require("express-rate-limit");
 const connectDB = require("./src/db/db");
 
 const trips = require("./src/routers/trips");
-// const accommodations = require("./src/routers/accommodations");
-// const activities = require("./src/routers/activities");
 const flights = require("./src/routers/flights");
 const auth = require("./src/routers/auth");
-const roles = require("./src/routers/roles");
+const roles = require("./src/routers/roles"); // Benjamin:is this is use? else remove please
 const accoms = require("./src/routers/accommodations");
 const restaurants = require("./src/routers/restaurants");
 const activities = require("./src/routers/activities");
