@@ -2,10 +2,63 @@ const FlightsModel = require("../models/Flights");
 const mongoose = require("mongoose");
 const { getFlightData } = require("../services/flightService");
 
+const validateFlightQuery = (req, res, next) => {
+    const { origin, destination, departureDate, cabinClass } = req.query;
+
+    // Ensure all required query params are provided
+    if (!origin || !destination || !departureDate || !cabinClass) {
+        return res.status(400).json({
+            error: "Missing required fields. Please provide origin, destination, departureDate, and cabinClass.",
+        });
+    }
+
+    console.log("origin: ", origin);
+    
+
+    // Optional: You can validate origin and destination as before
+    const validCities = {
+        singapore: "SIN",
+        istanbul: "IST",
+        tromsø: "TOS",
+        tromso: "TOS",
+        christchurch: "CHC",
+        sapporo: "CTS",
+        cairo: "CAI",
+        sin: "SIN",
+        ist: "IST",
+        tos: "TOS",
+        chc: "CHC",
+        cts: "CTS",
+        cai: "CAI",
+    };
+
+    const originInput = validCities[origin.toLowerCase()];
+    const destinationInput = validCities[destination.toLowerCase()];
+
+    if (!originInput) {
+        console.log('origin input: ', originInput);
+        return res.status(400).json({ error: "Invalid origin city." });
+    }
+
+    if (!destinationInput) {
+        return res.status(400).json({ error: "Invalid destination city." });
+    }
+
+    // Validate dates (departureDate must be today or later)
+    const today = new Date().toISOString().split("T")[0];
+    if (new Date(departureDate) < new Date(today)) {
+        return res
+            .status(400)
+            .json({ error: "Departure date must be today or later." });
+    }
+
+    // If all validation passes, continue to the next handler
+    next();
+};
+
 const fetchFlights = async (req, res) => {
     try {
-        const { origin, destination, departureDate, cabinClass } =
-            req.query;
+        const { origin, destination, departureDate, cabinClass } = req.query;
         const flightData = await getFlightData(
             origin,
             destination,
@@ -81,4 +134,9 @@ const getAllFlights = async (req, res) => {
     }
 };
 
-module.exports = { getAllFlights, seedFlights, fetchFlights };
+module.exports = {
+    getAllFlights,
+    seedFlights,
+    fetchFlights,
+    validateFlightQuery,
+};
